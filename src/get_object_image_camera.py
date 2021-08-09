@@ -51,7 +51,7 @@ class GetObjectImageCamera():
     def rgb_image_ros_to_opencv(self):
         try:
             object_image = self.image
-            print(type(object_image))
+            #print(type(object_image))
             self.img_pub.publish(object_image)
             object_image = self.cv_bridge.imgmsg_to_cv2(object_image, 'passthrough')
         except CvBridgeError as e:
