@@ -1,0 +1,7 @@
+# Define the goal.
+sensor_msgs/PointCloud2 cloud
+---
+# Define the result.
+judge_target_object/BoundingBox3D[] bounding_boxes
+---
+# Define a feedback message.

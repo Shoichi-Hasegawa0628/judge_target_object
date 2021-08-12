@@ -21,7 +21,7 @@ class JudgeTargetObjectYOLOv3():
     
     def __init__(self):
         rospy.Subscriber('/camera/rgb/image_raw', Image, self.detect, queue_size=10)
-        self._client = actionlib.SimpleActionClient("/darknet_ros/check_for_objects", CheckForObjectsAction)
+        self._client = actionlib.SimpleActionClient('/darknet_ros/check_for_objects', CheckForObjectsAction)
         print('Waiting for the server "{}"...'.format("/darknet_ros/check_for_objects"))
         self._client.wait_for_server()
         print('Connected to the service "{}"...'.format("/darknet_ros/check_for_objects"))
@@ -82,8 +82,10 @@ class JudgeTargetObjectYOLOv3():
         start = timer()
         # Send request.
         while True:
+            
             self._client.send_goal(goal)
             self._client.wait_for_result()
+            rospy.loginfo("OKKKKK")
             raw_res = self._client.get_result()
             print(goal.id, raw_res.id)
             if raw_res.id == goal.id:

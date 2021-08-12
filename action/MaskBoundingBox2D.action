@@ -1,0 +1,7 @@
+# Define the goal.
+sensor_msgs/Image image
+---
+# Define the result.
+judge_target_object/MaskBoundingBox2D[] bounding_boxes
+---
+# Define a feedback message.

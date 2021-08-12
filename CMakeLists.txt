@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.0.2)
+cmake_minimum_required(VERSION 2.8.3)
 project(judge_target_object)
 
 find_package(catkin REQUIRED COMPONENTS
@@ -9,12 +9,14 @@ find_package(catkin REQUIRED COMPONENTS
   std_msgs
   actionlib_msgs
   # Added packages:
-  #darknet_ros_msgs
+  darknet_ros_msgs
 )
 
 add_message_files(
   FILES
   BoundingBox2D.msg
+  BoundingBox3D.msg
+  MaskBoundingBox2D.msg
 )
 
 add_action_files(
@@ -22,6 +24,8 @@ add_action_files(
   action
   FILES
   BoundingBox2D.action
+  BoundingBox3D.action
+  MaskBoundingBox2D.action
 )
 
 generate_messages(
@@ -39,7 +43,7 @@ catkin_package(
   std_msgs
   actionlib_msgs
   message_runtime
-  #darknet_ros_msgs
+  darknet_ros_msgs
 )
 
 include_directories(
