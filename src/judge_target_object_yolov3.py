@@ -28,8 +28,6 @@ class JudgeTargetObjectYOLOv3():
     def judge_target_object_yolov3(self):
         object_list = self.detect_objects_info
         detect_object_img = self.detect_object_img
-        #cv2.imshow('painted', detect_object_img)
-        #cv2.waitKey(1)
 
         for i in range(len(object_list)):
             if object_list[i].probability >= 0.5:
@@ -47,7 +45,12 @@ class JudgeTargetObjectYOLOv3():
                 #remove_line_img = cv2.inpaint(cut_img, mask, 3, cv2.INPAINT_TELEA)
                 # remove_line_img = cv2.inpaint(cut_img, mask, 3, cv2.INPAINT_NS)
                 cut_img = detect_object_img[object_list[i].ymin : object_list[i].ymax, object_list[i].xmin : object_list[i].xmax]
-                cv2.imwrite("../data/trimming/trimming_img_{}.jpg".format(object_list[i].Class), cut_img)
+                h, w = cut_img[:2]
+                h1, h2 = int(h * 0.05), int(h * 0.95)
+                w1, w2 = int(w * 0.05), int(w * 0.95)
+                remove_line_img = cut_img[h1: h2, w1: w2]
+
+                cv2.imwrite("../data/trimming/trimming_img_{}.jpg".format(object_list[i].Class), remove_line_img)
 
         print("Target_Object:", self.target_list)
         #print("BB information:", self.detect_objects_info)
