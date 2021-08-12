@@ -13,11 +13,12 @@ class JudgeTargetObjectYOLOv3():
     
     def __init__(self):
         rospy.Subscriber('/darknet_ros/bounding_boxes', BoundingBoxes, self.bounding_callback, queue_size=10)
-        rospy.Subscriber('/darknet_ros/detection_image', Image, self.yolov3_image_callback, queue_size=10)
-        #rospy.Subscriber('', Image, self.yolov3_image_callback, queue_size=10)
+        #rospy.Subscriber('/darknet_ros/detection_image', Image, self.yolov3_image_callback, queue_size=10)
+        rospy.Subscriber('/object_image', Image, self.image_callback, queue_size=10)
         self.cv_bridge = CvBridge()
         self.detect_objects_info = []
-        self.detect_object_img = None
+        self.img = None
+        #self.detect_object_img = None
         self.processed_object_img = None
         self.target_list = []
 
@@ -29,6 +30,7 @@ class JudgeTargetObjectYOLOv3():
 
     def judge_target_object_yolov3(self):
         object_list = self.detect_objects_info
+        #detect_object_img = self.processed_object_img
         detect_object_img = self.processed_object_img
 
         for i in range(len(object_list)):
@@ -47,12 +49,17 @@ class JudgeTargetObjectYOLOv3():
     def bounding_callback(self, msg):
         self.detect_objects_info = msg.bounding_boxes
 
-    
+    """
     def yolov3_image_callback(self, img):
         self.detect_object_img = img
         self.processed_object_img = self.yolov3_image_ros_to_opencv(self.detect_object_img)
         #cv2.imshow('YOLO', self.detect_object_img)
         #cv2.waitKey(1)
+    """
+
+    def image_callback(self, img):
+        self.img = img
+        self.processed_object_img = self.yolov3_image_ros_to_opencv(self.img)
 
 
     def yolov3_image_ros_to_opencv(self, img):
