@@ -14,9 +14,11 @@ class JudgeTargetObjectYOLOv3():
     def __init__(self):
         rospy.Subscriber('/darknet_ros/bounding_boxes', BoundingBoxes, self.bounding_callback, queue_size=10)
         rospy.Subscriber('/darknet_ros/detection_image', Image, self.yolov3_image_callback, queue_size=10)
+        #rospy.Subscriber('', Image, self.yolov3_image_callback, queue_size=10)
         self.cv_bridge = CvBridge()
         self.detect_objects_info = []
         self.detect_object_img = None
+        self.processed_object_img = None
         self.target_list = []
 
         while len(self.detect_objects_info) == 0: #or self.detect_object_img == None:
@@ -27,32 +29,19 @@ class JudgeTargetObjectYOLOv3():
 
     def judge_target_object_yolov3(self):
         object_list = self.detect_objects_info
-        detect_object_img = self.detect_object_img
-        #cv2.imshow('painted', detect_object_img)
-        #cv2.waitKey(1)
+        detect_object_img = self.processed_object_img
 
         for i in range(len(object_list)):
             if object_list[i].probability >= 0.5:
                 self.target_list.append(object_list[i])
-                """
-                mask = np.zeros((int(object_list[i].ymax - object_list[i].ymin), int(object_list[i].xmax - object_list[i].xmin)), dtype = np.uint8)
-                mask = cv2.rectangle(mask, (object_list[i].xmin, object_list[i].ymin), (object_list[i].xmax ,object_list[i].ymax), color=(255,255,255), thickness=2)
-                remove_line_img = cv2.inpaint(detect_object_img, mask, 3, cv2.INPAINT_TELEA)
-                cut_img = remove_line_img[object_list[i].ymin : object_list[i].ymax, object_list[i].xmin : object_list[i].xmax]
-                """
-
-                #mask = np.zeros((int(cut_img.shape[1]), int(cut_img.shape[0])), dtype = np.uint8)
-                #print("size:", cut_img.shape[0], cut_img.shape[1])
-                #mask = cv2.rectangle(mask, (object_list[i].xmin, object_list[i].ymin), (object_list[i].xmax ,object_list[i].ymax), color=(255,255,255), thickness=2)
-                #remove_line_img = cv2.inpaint(cut_img, mask, 3, cv2.INPAINT_TELEA)
-                # remove_line_img = cv2.inpaint(cut_img, mask, 3, cv2.INPAINT_NS)
                 cut_img = detect_object_img[object_list[i].ymin : object_list[i].ymax, object_list[i].xmin : object_list[i].xmax]
-                cv2.imwrite("../data/trimming/trimming_img_{}.jpg".format(object_list[i].Class), cut_img)
-
-        print("Target_Object:", self.target_list)
-        #print("BB information:", self.detect_objects_info)
-        #rospy.spin()
-
+                h, w = cut_img.shape[:2]
+                h1, h2 = int(h * 0.05), int(h * 0.95)
+                w1, w2 = int(w * 0.05), int(w * 0.95)
+                remove_line_img = cut_img[h1: h2, w1: w2]
+                
+                cv2.imwrite("../data/trimming/trimming_img_{}_{}.jpg".format(i, object_list[i].Class), cut_img)
+                cv2.imwrite("../data/remove_line/remove_line_img_{}_{}.jpg".format(i, object_list[i].Class), remove_line_img)
 
 
     def bounding_callback(self, msg):
@@ -61,7 +50,7 @@ class JudgeTargetObjectYOLOv3():
     
     def yolov3_image_callback(self, img):
         self.detect_object_img = img
-        self.detect_object_img = self.yolov3_image_ros_to_opencv(self.detect_object_img)
+        self.processed_object_img = self.yolov3_image_ros_to_opencv(self.detect_object_img)
         #cv2.imshow('YOLO', self.detect_object_img)
         #cv2.waitKey(1)
 
