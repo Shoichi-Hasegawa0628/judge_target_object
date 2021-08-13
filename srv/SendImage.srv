@@ -1,0 +1,4 @@
+sensor_msgs/Image rgb_image
+int32 count
+---
+bool success

@@ -21,7 +21,6 @@ class JudgeTargetObjectYOLOv3():
         #self.detect_object_img = None
         self.processed_object_img = None
         self.target_list = []
-
         while len(self.detect_objects_info) == 0: #or self.detect_object_img == None:
             pass
         for j in range(1000):

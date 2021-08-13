@@ -26,7 +26,7 @@ class Trial():
 
 
     def bounding_callback(self, msg):
-        print("OK")
+        #print("OK")
         self.detect_objects_info = msg.bounding_boxes
         print(len(self.detect_objects_info))
 
