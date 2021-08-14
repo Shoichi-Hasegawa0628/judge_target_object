@@ -8,7 +8,8 @@ from cv_bridge import CvBridge
 import time
 import glob
 import os
-from judge_target_object.srv import SendImage
+from judge_target_object.srv import SendImageYOLOv3
+from judge_target_object.srv import SendImageMLDA
 from sensor_msgs.msg import Image
 from darknet_ros_msgs.msg import BoundingBoxes,BoundingBox
 
@@ -39,7 +40,7 @@ class SendObjectImage():
                 img = self.cv_bridge.cv2_to_imgmsg(img, encoding="bgr8")
                 while len(self.detect_objects_info) == 0:
                     self.img_pub.publish(img)
-                send_img = rospy.ServiceProxy('judge_yolov3', SendImage)
+                send_img = rospy.ServiceProxy('judge_yolov3', SendImageYOLOv3)
                 rgb_image = img
                 response = send_img(rgb_image, count)
                 print(response)
@@ -67,7 +68,7 @@ class SendObjectImage():
                     img = self.cv_bridge.cv2_to_imgmsg(img, encoding="bgr8")
                     while len(self.detect_objects_info) == 0:
                         self.img_pub.publish(img)
-                    send_img = rospy.ServiceProxy('judge_mlda', SendImage)
+                    send_img = rospy.ServiceProxy('judge_mlda', SendImageMLDA)
                     rgb_image = img
                     response = send_img(rgb_image, count)
                     print(response)

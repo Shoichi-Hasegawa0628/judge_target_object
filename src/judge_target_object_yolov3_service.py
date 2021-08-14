@@ -6,15 +6,15 @@ import cv2
 from cv_bridge import CvBridge, CvBridgeError
 from darknet_ros_msgs.msg import BoundingBoxes,BoundingBox
 from sensor_msgs.msg import Image
-from judge_target_object.srv import SendImage
-from judge_target_object.srv import SendImageResponse
+from judge_target_object.srv import SendImageYOLOv3
+from judge_target_object.srv import SendImageYOLOv3Response
 
 class JudgeTargetObjectYOLOv3():
     
     def __init__(self):
         rospy.Subscriber('/darknet_ros/bounding_boxes', BoundingBoxes, self.bounding_callback, queue_size=10)
         rospy.Subscriber('/darknet_ros/detection_image', Image, self.yolov3_image_callback, queue_size=10)
-        rospy.Service('judge_yolov3', SendImage, self.judge_target_object_yolov3)
+        rospy.Service('judge_yolov3', SendImageYOLOv3, self.judge_target_object_yolov3)
         self.cv_bridge = CvBridge()
         self.detect_objects_info = []
         self.detect_object_img = None
@@ -37,7 +37,7 @@ class JudgeTargetObjectYOLOv3():
                 cv2.imwrite("../data/yolov3/{}/yolov3_img_{}.jpg".format(img_num, i), cut_img_yolov3)
                 print("OK")
 
-        return SendImageResponse(success = True)
+        return SendImageYOLOv3Response(success = True)
 
 
     def bounding_callback(self, msg):
