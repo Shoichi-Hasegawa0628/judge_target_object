@@ -1,5 +1,6 @@
 sensor_msgs/Image yolov3_image
 string status
+int32 observed_img_idx
 int32 count
 ---
 bool success
