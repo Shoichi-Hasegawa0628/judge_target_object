@@ -14,17 +14,19 @@ from sensor_msgs.msg import Image
 from darknet_ros_msgs.msg import BoundingBoxes,BoundingBox
 from subprocess import * 
 from natsort import natsorted
+import mlda_ros_main
 
 class SendObjectImage():
 
     def __init__(self):
+        self.mlda_main = mlda_ros_main.MLDAMain()
         # YOLOv3
         self.img_pub = rospy.Publisher('/object_image', Image, queue_size=1)
         rospy.Subscriber('/darknet_ros/bounding_boxes', BoundingBoxes, self.bounding_callback, queue_size=1)
         
         self.cv_bridge = CvBridge()
         self.detect_objects_info = []
-        #self.sending_image_judge_yolov3()
+        self.sending_image_judge_yolov3()
         self.sending_image_judge_mlda()
 
 

@@ -2,6 +2,7 @@
 # -*- coding: utf-8 -*-
 # YOLOv3で検出した物体から, 識別精度0.5以上の物体のみtarget_objectとして物体の画像領域だけを切り抜くコード
 import rospy
+import numpy as np
 import cv2
 from cv_bridge import CvBridge, CvBridgeError
 from darknet_ros_msgs.msg import BoundingBoxes,BoundingBox
@@ -20,7 +21,7 @@ class JudgeTargetObjectYOLOv3():
         rospy.Service('judge_yolov3', SendImageYOLOv3, self.judge_target_object_yolov3)
         self.cv_bridge = CvBridge()
         self.detect_objects_info = []
-        self.processed_object_img = None
+        self.detect_pre_img = 0
 
 
     def judge_target_object_yolov3(self, msg):
@@ -32,9 +33,21 @@ class JudgeTargetObjectYOLOv3():
 
         time.sleep(3.0)
         self.detect_objects_info = bb.bounding_boxes
-        img = rospy.wait_for_message('/darknet_ros/detection_image', Image, timeout=None)
-        img = self.image_ros_to_opencv(img)
-
+        
+        img = 0
+        if msg.count != 0:
+            while True:
+                img = rospy.wait_for_message('/darknet_ros/detection_image', Image, timeout=None)
+                img = self.image_ros_to_opencv(img)
+                status = np.array_equal(img, self.detect_pre_img)
+                if status is False:
+                    break
+        
+        else:
+            img = rospy.wait_for_message('/darknet_ros/detection_image', Image, timeout=None)
+            img = self.image_ros_to_opencv(img)
+        self.detect_pre_img = img
+        
         object_list = self.detect_objects_info
         observed_img = self.image_ros_to_opencv(msg.rgb_image)
         #cv2.imshow('color', img)
@@ -43,7 +56,7 @@ class JudgeTargetObjectYOLOv3():
 
         for i in range(len(object_list)):
             while len(self.detect_objects_info) == 0: 
-                pass
+                continue
             time.sleep(3.0)
             yolov3_img = img
             if object_list[i].probability >= 0.5:
@@ -74,6 +87,10 @@ class JudgeTargetObjectYOLOv3():
                 cv2.imwrite("../data/trimming/{}/trimming_img_{}.jpg".format(img_num, i), cut_img)
                 cv2.imwrite("../data/yolov3/{}/yolov3_img_{}.jpg".format(img_num, i), cut_img_yolov3)
                 cv2.imwrite("../data/resize/{}/resize_img_{}.jpg".format(img_num, i), cut_img_resize)
+
+                cv2.imshow('color', cut_img)
+                cv2.waitKey(3000)
+
         print("OK")
         #img = 0
         #self.processed_object_img = 0
