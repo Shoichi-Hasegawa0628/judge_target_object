@@ -9,7 +9,7 @@ import time
 import glob
 import os
 from judge_target_object.srv import SendImageYOLOv3
-from judge_target_object.srv import SendImageMLDA
+#from judge_target_object.srv import SendImageMLDA
 from sensor_msgs.msg import Image
 from darknet_ros_msgs.msg import BoundingBoxes,BoundingBox
 from subprocess import * 
@@ -58,11 +58,11 @@ class SendObjectImage():
             if status is False:
                 continue
             
-            print("Publish image")
+            #print("Publish image")
             send_img = rospy.ServiceProxy('judge_yolov3', SendImageYOLOv3)
             rgb_image = img
             response = send_img(rgb_image, count)
-            print(response)
+            #print(response)
             #self.img_pub.unregister()
             #time.sleep(1.0)
             count += 1
@@ -78,16 +78,16 @@ class SendObjectImage():
             #print(os.listdir('../data/resize/' + i))
             if os.path.isdir('../data/resize/' + i):
                 folders.append(i)
-        print(folders)
+        #print(folders)
         ar_folders = natsorted(folders)
-        print(natsorted(folders))
+        #print(natsorted(folders))
 
         for j in range(len(ar_folders)):
             files = glob.glob("../data/resize/{}/*".format(int(ar_folders[j])))
             files_list.append(files)
         rospy.loginfo('waiting')
-        rospy.wait_for_service('judge_mlda')
-        print(files_list)
+        #rospy.wait_for_service('judge_mlda')
+        #print(files_list)
         
         for k in range(len(ar_folders)):
             for l in range(len(files_list[k])):
@@ -96,13 +96,16 @@ class SendObjectImage():
                 img = cv2.imread('../data/resize/{}/resize_img_{}.jpg'.format(int(ar_folders[k]), l))
                 img = self.cv_bridge.cv2_to_imgmsg(img, encoding="bgr8")
 
-                send_img = rospy.ServiceProxy('judge_mlda', SendImageMLDA)
+                #send_img = rospy.ServiceProxy('judge_mlda', SendImageMLDA)
                 yolov3_image = img
                 status = "estimate"
                 observed_img_idx = int(ar_folders[k])
-                response = send_img(yolov3_image, status, observed_img_idx, count)
-                print(response)
-                print(int(ar_folders[k]), l)
+                status, object_word, object_prob = self.mlda_main.judge_target_object_mlda (yolov3_image, status, observed_img_idx, count)
+                #response = send_img(yolov3_image, status, observed_img_idx, count)
+                #print(response)
+                print("Status:{}\nPicture:{}\nObject:{}\nObject_Word:{}\nObject_Prob:{}\n".format(status, int(ar_folders[k]), l, object_word, object_prob))
+                print("************************************************************************")
+                #print(int(ar_folders[k]), l)
 
                 #time.sleep(1.0)
                 #count += 1

@@ -51,22 +51,22 @@ class GetWordFeature():
         rospy.loginfo("add the new word %s to object %d", add_word, object_id)
 
 
-    def estimate(self, req):
-        word = np.loadtxt("./data/estimate_result/{}/Pmdw[1]_{}.txt".format(req.observed_img_idx, req.count))
+    def estimate(self, yolov3_image, status, observed_img_idx, count):
+        word = np.loadtxt("./data/estimate_result/{}/Pmdw[1]_{}.txt".format(observed_img_idx, count))
         word_file = open("./data/bow/word_dic.txt")
         word_dic = word_file.readlines()
         word_dic = [convert.replace("\n", "") for convert in word_dic]
         word_dic = [convert.replace(".", "") for convert in word_dic]
-        print(word_dic)
+        #print(word_dic)
         
         unsorted_max_indices = np.argpartition(-word, 5)[:5]                    # 上位5つの単語を表示
-        print(unsorted_max_indices)
-        print(len(unsorted_max_indices))
-        print(len(word))
-        print(word)
+        #print(unsorted_max_indices)
+        #print(len(unsorted_max_indices))
+        #print(len(word))
+        #print(word)
 
         y = word[unsorted_max_indices]
-        print(y)
+        #print(y)
         indices = np.argsort(-y)
         max_k_indices = unsorted_max_indices[indices]
         
@@ -77,14 +77,14 @@ class GetWordFeature():
         estimated_words = "I estimated this object. "
         estimate_result = {}
         
-        with open("./data/estimate_result/{}/estimate_word_{}.txt".format(req.observed_img_idx, req.count), mode='w') as f:
+        with open("./data/estimate_result/{}/estimate_word_{}.txt".format(observed_img_idx, count), mode='w') as f:
             for word_index in max_k_indices:
-                print(word_dic[word_index])
+                #print(word_dic[word_index])
                 # estimated_words += word_dic[word_index] + " " + str(round(y[index_counter] * 100, 2)) + "%. "
                 estimated_words += "No." + str(index_counter + 1) + ". " + word_dic[word_index] + " " + str(round(y[index_counter] * 100, 1)) + "%. " 
                 # estimated_words += word_dic[word_index] + "."
                 f.write(word_dic[word_index] + " " + str(round(y[index_counter] * 100, 1)) + "%" + "\n")
-                estimate_result["{}{}_".format(req.observed_img_idx, req.count) + word_dic[word_index]] = round(y[index_counter] * 100, 1)
+                estimate_result["{}{}_".format(observed_img_idx, count) + word_dic[word_index]] = round(y[index_counter] * 100, 1)
                 index_counter += 1
         
         estimate_hist = np.zeros(len(word_dic))
@@ -92,33 +92,33 @@ class GetWordFeature():
         for word_index in max_k_indices:
             estimate_hist[word_index] += 1
         
-        if os.path.exists("./data/estimate_result/{}".format(req.observed_img_idx)) is True:
+        if os.path.exists("./data/estimate_result/{}".format(observed_img_idx)) is True:
             pass
 
         else:
-            os.mkdir("./data/estimate_result/{}".format(req.observed_img_idx))
+            os.mkdir("./data/estimate_result/{}".format(observed_img_idx))
 
-        file = pathlib.Path("./data/estimate_result/{}/estimate_histogram_word_{}.txt".format(req.observed_img_idx, req.count))
+        file = pathlib.Path("./data/estimate_result/{}/estimate_histogram_word_{}.txt".format(observed_img_idx, count))
         file.touch()
-        np.savetxt("./data/estimate_result/{}/estimate_histogram_word_{}.txt".format(req.observed_img_idx, req.count), estimate_hist.reshape(1, -1), fmt=str("%d"))
+        np.savetxt("./data/estimate_result/{}/estimate_histogram_word_{}.txt".format(observed_img_idx, count), estimate_hist.reshape(1, -1), fmt=str("%d"))
 
         return estimate_result
         
     
-    def word_server(self, req):
-        if req.status == "learn":
+    def word_server(self, yolov3_image, status, observed_img_idx, count):
+        if status == "learn":
             #self.separate_word("word.txt")
             #self.make_dic("word_dic.txt")
             #self.make_bow("histogram_word.txt")
             pass
 
-        elif req.status == "estimate":
-            result = self.estimate(req)
+        elif status == "estimate":
+            result = self.estimate(yolov3_image, status, observed_img_idx, count)
             return result
-            #return mlda_wordResponse(self.estimate_word(req.count))
+            #return mlda_wordResponse(self.estimate_word(count))
 
         #else:
-        #    self.add_word(req.sentence, req.count)         
+        #    self.add_word(sentence, count)         
         
         #return mlda_wordResponse("Finished")
 

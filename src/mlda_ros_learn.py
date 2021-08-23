@@ -16,8 +16,8 @@ class MLDA():
             a,b = pickle.load( f )
         return a,b
 
-    def save_model(self, save_dir, n_dz, n_mzw, n_mz, docs_mdn, topics_mdn, M, dims, req):
-        rospy.loginfo("Savinng the laerning result.")
+    def save_model(self, save_dir, n_dz, n_mzw, n_mz, docs_mdn, topics_mdn, M, dims, count):
+        #rospy.loginfo("Savinng the laerning result.")
 
         try:
             os.mkdir(save_dir)
@@ -26,18 +26,18 @@ class MLDA():
 
         Pdz = n_dz + ALPHA
         Pdz = (Pdz.T / Pdz.sum(1)).T
-        np.savetxt(os.path.join(save_dir, "Pdz_{}.txt".format(req.count)),
+        np.savetxt(os.path.join(save_dir, "Pdz_{}.txt".format(count)),
                    Pdz, delimiter=",", fmt=str("%f"))
 
         for m in range(M):
             Pwz = (n_mzw[m].T + BETA) / (n_mz[m] + dims[m] * BETA)
             Pdw = Pdz.dot(Pwz.T)
-            np.savetxt(os.path.join(save_dir, "Pmdw[%d]_{}.txt".format(req.count) % m), Pdw, fmt=str("%f"))
+            np.savetxt(os.path.join(save_dir, "Pmdw[%d]_{}.txt".format(count) % m), Pdw, fmt=str("%f"))
 
-        with open(os.path.join(save_dir, "model_{}.pickle".format(req.count)), "wb") as f:
+        with open(os.path.join(save_dir, "model_{}.pickle".format(count)), "wb") as f:
             pickle.dump([n_dz, n_mzw, n_mz, docs_mdn, topics_mdn], f)
 
-        rospy.loginfo("Finish the saving the model.")
+        #rospy.loginfo("Finish the saving the model.")
 
     # 尤度計算
     def calc_liklihood(self, target_modality_num, n_dz, n_zw, n_z, K, V):
@@ -133,8 +133,8 @@ class MLDA():
         pylab.draw()
         pylab.pause(0.01)
 
-    def mlda_learn(self, req, save_dir="model",estimate_mode=False):
-        rospy.loginfo("start to learning")
+    def mlda_learn(self, count, save_dir="model",estimate_mode=False):
+        #rospy.loginfo("start to learning")
 
         pylab.ion()  # インタラクティブモード(コンソール入力がいつでもできる)
 
@@ -243,11 +243,11 @@ class MLDA():
                 """
 
         self.save_model(save_dir, n_dz, n_mzw, n_mz, docs_mdn,
-                        topics_mdn, Modality_num, dimension_list, req)
+                        topics_mdn, Modality_num, dimension_list, count)
 
 
-    def mlda_server(self, req):
-        if req.status == "learn":
+    def mlda_server(self, status, observed_img_idx, count):
+        if status == "learn":
             """
             self.data = [np.loadtxt(DATA_FOLDER + "/histogram_image.txt", dtype=np.int32),
                          np.loadtxt(DATA_FOLDER +
@@ -266,17 +266,17 @@ class MLDA():
             """
             pass
 
-        elif req.status == "estimate":  ######パスの編集が必要
-            self.data = [np.loadtxt("./data/bof/{}/histgram_v_{}.txt".format(req.observed_img_idx, req.count), 
+        elif status == "estimate":  ######パスの編集が必要
+            self.data = [np.loadtxt("./data/bof/{}/histgram_v_{}.txt".format(observed_img_idx, count), 
                          dtype=np.int32),
                          None]
 
-            rospy.loginfo("Estimate unknown object mode start")
-            self.mlda_learn(req, "./data/estimate_result/{}".format(req.observed_img_idx), True)        ######パスの編集が必要
+            #rospy.loginfo("Estimate unknown object mode start")
+            self.mlda_learn(count, "./data/estimate_result/{}".format(observed_img_idx), True)        ######パスの編集が必要
 
         else:
             #rospy.logwarn(
-            #    "[Service em_mlda/learn] command not found: %s", req.status)
+            #    "[Service em_mlda/learn] command not found: %s", status)
             pass
 
         #return mlda_learnResponse(True)
@@ -284,7 +284,7 @@ class MLDA():
 
     def __init__(self):
         #s = rospy.Service('em_mlda/learn', mlda_learn, self.mlda_server)
-        rospy.loginfo("Ready learn")
+        #rospy.loginfo("Ready learn")
 
         self.data = []
 

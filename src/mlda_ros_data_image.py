@@ -8,7 +8,7 @@ import numpy as np
 import cv2
 from sensor_msgs.msg import Image
 from cv_bridge import CvBridge, CvBridgeError
-from mlda_ros.srv import *
+#from mlda_ros.srv import *
 import glob
 import pickle
 import pathlib
@@ -48,12 +48,12 @@ class GetImageFeature():
         result, f = self.calc_feature(images)
         if result == 0:
             return 0
-        print(f)
+        #print(f)
         bow_trainer.add(f)
 
-        print("Start")
+        #print("Start")
         code_book = bow_trainer.cluster()
-        print("Start")
+        #print("Start")
 
         if os.path.exists("./data/bof/{}".format(count)) is True:
             pass
@@ -66,7 +66,7 @@ class GetImageFeature():
         np.savetxt("./data/bof/" + save_name, code_book)                                      
     
 
-    def make_bof(self, req, code_book_name, images, hist_name, estimate_mode, count):
+    def make_bof(self, code_book_name, images, hist_name, estimate_mode, count):
         code_book = np.loadtxt("./data/bof" + "/" + code_book_name, dtype=np.float32)                
         self.knn.train(code_book, cv2.ml.ROW_SAMPLE, np.arange(len(code_book), dtype=np.float32))
 
@@ -84,7 +84,7 @@ class GetImageFeature():
                 h[int(i)] += 1
 
             hists.append( h )
-            print(hists)
+            #print(hists)
 
             if os.path.exists("./data/bof/{}".format(count)) is True:
                 pass
@@ -115,16 +115,16 @@ class GetImageFeature():
         """
             
 
-    def image_server(self, req):                                  
-        if req.status == "learn":
+    def image_server(self, yolov3_image, status, observed_img_idx, count):                                  
+        if status == "learn":
             pass
 
-        elif req.status == "estimate":
-            img = self.image_callback(req.yolov3_image)
-            result = self.make_codebook(img, 50, "{}/codebook_{}.txt".format(req.observed_img_idx, req.count), req.observed_img_idx)
+        elif status == "estimate":
+            img = self.image_callback(yolov3_image)
+            result = self.make_codebook(img, 50, "{}/codebook_{}.txt".format(observed_img_idx, count), observed_img_idx)
             if result == 0:
                 return 0                                        
-            self.make_bof(req, "{}/codebook_{}.txt".format(req.observed_img_idx, req.count), img, "./data/bof/{}/histgram_v_{}.txt".format(req.observed_img_idx, req.count), True, req.observed_img_idx)                         
+            self.make_bof("{}/codebook_{}.txt".format(observed_img_idx, count), img, "./data/bof/{}/histgram_v_{}.txt".format(observed_img_idx, count), True, observed_img_idx)                         
 
 
     def image_callback(self, image):

@@ -10,8 +10,8 @@ import random
 import subprocess
 import math
 
-from mlda_ros.srv import *
-from mlda_ros.msg import *
+#from mlda_ros.srv import *
+#from mlda_ros.msg import *
 
 import sys
 reload(sys)
