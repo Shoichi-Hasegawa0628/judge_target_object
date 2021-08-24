@@ -19,8 +19,14 @@ cv2.imwrite('../data/trimming/0/trimming_img_0_re.jpg' , img3)
 import pathlib
 import numpy as np
 
+
+P = [ 0.0 ] * 3
+print(P)
+
+"""
 save_name = "{}/codebook_{}.txt".format(0, 0)
 file = pathlib.Path("../data/bof/" + save_name)
 file.touch()
 code_book = np.zeros(10)
 np.savetxt("./data/bof/" + save_name, code_book)  
+"""
