@@ -2,6 +2,9 @@
 # -*- coding: utf-8 -*-
 # judge_yolov3.pyとjudge_mlda.pyに撮影した画像を1枚ずつ送るコード
 
+# 必要なライブラリ
+# pip install natsort
+
 import rospy
 import cv2
 from cv_bridge import CvBridge
@@ -11,13 +14,14 @@ import os
 from judge_target_object.srv import SendImageYOLOv3
 #from judge_target_object.srv import SendImageMLDA
 from sensor_msgs.msg import Image
+from std_msgs.msg import String
 from darknet_ros_msgs.msg import BoundingBoxes,BoundingBox
 from subprocess import * 
 from natsort import natsorted
 import mlda_ros_main
 
-class SendObjectImage():
 
+class SendObjectImage():
     def __init__(self):
         self.mlda_main = mlda_ros_main.MLDAMain()
         # YOLOv3
@@ -27,7 +31,12 @@ class SendObjectImage():
         self.cv_bridge = CvBridge()
         self.detect_objects_info = []
         self.sending_image_judge_yolov3()
-        self.sending_image_judge_mlda()
+        status = self.sending_image_judge_mlda()
+        
+        if status is True:
+            print("Target Object is Found!")
+        else:
+            print("Not Found in this place")
 
 
     def sending_image_judge_yolov3(self):
@@ -106,6 +115,21 @@ class SendObjectImage():
                 print("Status:{}\nPicture:{}\nObject:{}\nObject_Word:{}\nObject_Prob:{}\n".format(status, int(ar_folders[k]), l, object_word, object_prob))
                 print("************************************************************************")
                 #print(int(ar_folders[k]), l)
+
+                # 対象物が存在するかの判断
+                word = rospy.wait_for_message("/human_command", String, timeout=None)
+                command_object = word.data
+                print(command_object)
+
+                for w in object_word:
+                    print(w)
+                    if command_object == w:
+                        #print("Yes!!!!!!!")
+                        status = True
+                        return status
+        
+        status = False
+        return status
 
                 #time.sleep(1.0)
                 #count += 1

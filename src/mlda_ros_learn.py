@@ -2,6 +2,9 @@
 # -*- coding: utf-8 -*-
 # MLDAのメインコード, 画像分布・単語分布・物体カテゴリ分布を計算する
 
+# 必要なライブラリ
+# apt-get install python-tk
+
 from __init__ import *
 import pylab
 import pickle

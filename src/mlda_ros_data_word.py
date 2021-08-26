@@ -1,5 +1,9 @@
 #! /usr/bin/env python
 # -*- coding: utf-8 -*-
+
+# 必要なライブラリ
+# pip install pathlib
+
 from __future__ import unicode_literals
 from __init__ import *
 import glob
