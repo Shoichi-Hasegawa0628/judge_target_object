@@ -1,5 +1,10 @@
-It 16.3%
-is 14.1%
-I 5.5%
-a 5.3%
-soft 4.2%
+It 3.4%
+is 6.4%
+I 4.4%
+a 15.8%
+juice 12.8%
+soft 3.3%
+drink 2.8%
+stuffed 3.8%
+sound 2.4%
+This 2.3%

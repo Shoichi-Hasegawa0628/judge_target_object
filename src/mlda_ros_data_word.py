@@ -63,7 +63,7 @@ class GetWordFeature():
         word_dic = [convert.replace(".", "") for convert in word_dic]
         #print(word_dic)
         
-        unsorted_max_indices = np.argpartition(-word, 5)[:5]                    # 上位5つの単語を表示
+        unsorted_max_indices = np.argpartition(-word, 10)[:10]                    # 上位10つの単語を表示
         #print(unsorted_max_indices)
         #print(len(unsorted_max_indices))
         #print(len(word))

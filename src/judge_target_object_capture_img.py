@@ -9,6 +9,7 @@ from subprocess import *
 from geometry_msgs.msg import Twist
 from sensor_msgs.msg import Image
 from cv_bridge import CvBridge, CvBridgeError
+import judge_target_object_send_img
 
 
 class CaptureImageCamera():
@@ -41,7 +42,8 @@ class CaptureImageCamera():
                 cv2.imwrite('../data/observation/object_image_{}.jpg'.format(rotation), object_image)
 
         time.sleep(1.0)
-        #self.kill_node('get_object_image_yolov3')
+        #self.kill_node('take_observed_image')
+        judge_target_object_send_img.SendObjectImage()
 
     def image_callback(self, img):
         self.image = img
@@ -73,5 +75,5 @@ class CaptureImageCamera():
 
 
 if __name__ == "__main__":
-    rospy.init_node('get_object_image_yolov3')
+    rospy.init_node('take_observed_image')
     CaptureImageCamera()

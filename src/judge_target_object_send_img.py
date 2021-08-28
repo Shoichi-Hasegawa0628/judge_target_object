@@ -31,9 +31,9 @@ class SendObjectImage():
         self.cv_bridge = CvBridge()
         self.detect_objects_info = []
         self.sending_image_judge_yolov3()
-        status = self.sending_image_judge_mlda()
+        result = self.sending_image_judge_mlda()
         
-        if status is True:
+        if result is True:
             print("Target Object is Found!")
         else:
             print("Not Found in this place")
@@ -43,8 +43,8 @@ class SendObjectImage():
         time.sleep(5.0)
         count = 0
         files = glob.glob("../data/observation/*")
-        rospy.loginfo('waiting')
-        rospy.wait_for_service('judge_yolov3')
+        rospy.loginfo('waiting') 
+        rospy.wait_for_service('judge_yolov3') ##ここが上手く動作してない？
         
         while count != len(files):
             status = True
@@ -95,21 +95,37 @@ class SendObjectImage():
             files = glob.glob("../data/resize/{}/*".format(int(ar_folders[j])))
             files_list.append(files)
         rospy.loginfo('waiting')
+        print("OOO")
         #rospy.wait_for_service('judge_mlda')
         #print(files_list)
         
-        for k in range(len(ar_folders)):
+        ##############################################################################
+        for k in range(len(ar_folders)): #ここで問題が起きている？
+            print("ok")
             for l in range(len(files_list[k])):
                 #print(len(files_list[k]))
+                print("okok")
                 count = l
-                img = cv2.imread('../data/resize/{}/resize_img_{}.jpg'.format(int(ar_folders[k]), l))
+                file_names = []
+                for i in os.listdir('../data/resize/{}'.format(int(ar_folders[k]))):
+                    print(i)
+                    #print(os.listdir('../data/resize/' + i))
+                    #if os.path.isdir('../data/resize/' + i):
+                    file_names.append(i)
+                print(file_names)
+                print(int(ar_folders[k]))
+                print(file_names[l])
+                img = cv2.imread('../data/resize/{}/resize_img_{}.jpg'.format(int(ar_folders[k]), file_names[l]))
                 img = self.cv_bridge.cv2_to_imgmsg(img, encoding="bgr8")
+        ##############################################################################
 
                 #send_img = rospy.ServiceProxy('judge_mlda', SendImageMLDA)
                 yolov3_image = img
                 status = "estimate"
                 observed_img_idx = int(ar_folders[k])
                 status, object_word, object_prob = self.mlda_main.judge_target_object_mlda (yolov3_image, status, observed_img_idx, count)
+                if status is False:
+                    continue
                 #response = send_img(yolov3_image, status, observed_img_idx, count)
                 #print(response)
                 print("Status:{}\nPicture:{}\nObject:{}\nObject_Word:{}\nObject_Prob:{}\n".format(status, int(ar_folders[k]), l, object_word, object_prob))
@@ -119,17 +135,45 @@ class SendObjectImage():
                 # 対象物が存在するかの判断
                 word = rospy.wait_for_message("/human_command", String, timeout=None)
                 command_object = word.data
-                print(command_object)
+
+                if command_object == "blue_cup":
+                    judge_object_names = ["blue_cup", "blue", "cup"]
+                elif command_object == "green_cup":
+                    judge_object_names = ["green_cup", "green", "cup"]
+                elif command_object == "orange_cup":
+                    judge_object_names = ["orange_cup", "orange", "cup"]
+
+                elif command_object == "coffee_bottle":
+                    judge_object_names = ["coffee_bottle", "coffee", "bottle"]
+                elif command_object == "muscat_bottle":
+                    judge_object_names = ["muscat_bottle", "muscat", "bottle"]
+                elif command_object == "fruits_bottle":
+                    judge_object_names = ["fruits_bottle", "fruits", "bottle"]
+                
+                elif command_object == "penguin_doll":
+                    judge_object_names = ["penguin_doll", "penguin", "doll"]
+                elif command_object == "pig_doll":
+                    judge_object_names = ["pig_doll", "pig", "doll"]
+                elif command_object == "sheep_doll":
+                    judge_object_names = ["sheep_doll", "sheep", "doll"]
+
+                #command_object = "I"
+                print("Commanded object name is " + command_object + " !")
+                print("Judged object namse are " + judge_object_names[0] + " ," + judge_object_names[1] + " ," + judge_object_names[2])
 
                 for w in object_word:
                     print(w)
-                    if command_object == w:
-                        #print("Yes!!!!!!!")
-                        status = True
-                        return status
+
+                    for c in judge_object_names:
+                        print("reasoned name is " + w + " ...")
+                        print("target name is " + c + " ...")
+                        if w == c:
+                            print("Yes!!!!!!!")
+                            result = True
+                            return result
         
-        status = False
-        return status
+        result = False
+        return result
 
                 #time.sleep(1.0)
                 #count += 1
