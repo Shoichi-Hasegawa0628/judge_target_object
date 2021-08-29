@@ -1,10 +1,10 @@
-It 5.2%
+It 5.1%
 is 4.4%
-a 5.5%
-I 16.4%
-soft 14.4%
+a 5.6%
+I 16.1%
+soft 14.3%
 stuffed 3.9%
-drink 3.6%
-This 3.4%
+drink 2.3%
+This 3.6%
+cup 3.9%
 coffee 2.1%
-white 2.1%

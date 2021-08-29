@@ -1,5 +1,10 @@
-It 10.7%
-is 7.3%
-cup 10.0%
-drink 6.4%
-I 5.1%
+It 12.1%
+is 4.7%
+I 5.5%
+drink 13.9%
+a 4.7%
+cup 3.4%
+This 3.9%
+soft 3.3%
+stuffed 2.9%
+hard 2.1%

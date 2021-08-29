@@ -19,6 +19,7 @@ from darknet_ros_msgs.msg import BoundingBoxes,BoundingBox
 from subprocess import * 
 from natsort import natsorted
 import mlda_ros_main
+import shutil
 
 
 class SendObjectImage():
@@ -36,15 +37,30 @@ class SendObjectImage():
         if result is True:
             print("Target Object is Found!")
         else:
-            print("Not Found in this place")
-
+            print("************************\n")
+            print("************************\n")
+            print("Not Found in this place\n")
+            print("************************\n")
+            print("************************\n")
+        
+        # 使用した画像の保存とディレクトリの初期化
+        shutil.copytree("../data/", "../result/data") 
+        shutil.rmtree("../data/observation/")
+        shutil.rmtree("../data/resize/")
+        shutil.rmtree("../data/trimming/")
+        shutil.rmtree("../data/yolov3/")
+        os.mkdir("../data/observation")
+        os.mkdir("../data/resize")
+        os.mkdir("../data/trimming")
+        os.mkdir("../data/yolov3")
+        
 
     def sending_image_judge_yolov3(self):
         time.sleep(5.0)
         count = 0
         files = glob.glob("../data/observation/*")
         rospy.loginfo('waiting') 
-        rospy.wait_for_service('judge_yolov3') ##ここが上手く動作してない？
+        rospy.wait_for_service('judge_yolov3') 
         
         while count != len(files):
             status = True
@@ -58,7 +74,7 @@ class SendObjectImage():
                 self.img_pub.publish(img)
 
             base_time = rospy.Time.now().to_sec()
-            while len(self.detect_objects_info) == 0: #####ここが問題かも？
+            while len(self.detect_objects_info) == 0: 
                 self.img_pub.publish(img)
                 if rospy.Time.now().to_sec() - base_time > 10:
                     status = False
@@ -94,30 +110,41 @@ class SendObjectImage():
         for j in range(len(ar_folders)):
             files = glob.glob("../data/resize/{}/*".format(int(ar_folders[j])))
             files_list.append(files)
+        ar_files_list = natsorted(files_list)
         rospy.loginfo('waiting')
-        print("OOO")
+        #print("OOO")
         #rospy.wait_for_service('judge_mlda')
         #print(files_list)
         
-        ##############################################################################
-        for k in range(len(ar_folders)): #ここで問題が起きている？
-            print("ok")
-            for l in range(len(files_list[k])):
+        for k in range(len(ar_folders)): 
+            #print("ok")
+            for l in range(len(ar_files_list[k])):
                 #print(len(files_list[k]))
-                print("okok")
+                #print("okok")
                 count = l
                 file_names = []
                 for i in os.listdir('../data/resize/{}'.format(int(ar_folders[k]))):
-                    print(i)
+                    #print(i)
                     #print(os.listdir('../data/resize/' + i))
                     #if os.path.isdir('../data/resize/' + i):
                     file_names.append(i)
-                print(file_names)
-                print(int(ar_folders[k]))
-                print(file_names[l])
-                img = cv2.imread('../data/resize/{}/resize_img_{}.jpg'.format(int(ar_folders[k]), file_names[l]))
-                img = self.cv_bridge.cv2_to_imgmsg(img, encoding="bgr8")
-        ##############################################################################
+                #print(file_names)
+                print("Observed Image Number : " + str(int(ar_folders[k])))
+                print("Detected Object :" + file_names[l])
+
+                try:
+                    img = cv2.imread('../data/resize/{}/resize_img_{}.jpg'.format(int(ar_folders[k]), l))
+                    cv2.imshow("target_image", img)
+                    cv2.waitKey(3000)
+                except cv2.error:
+                    continue
+
+                #print(type(img))
+                try:
+                    img = self.cv_bridge.cv2_to_imgmsg(img, encoding="bgr8")
+                except TypeError:
+                    print("Failed: Reading Image")
+                    continue
 
                 #send_img = rospy.ServiceProxy('judge_mlda', SendImageMLDA)
                 yolov3_image = img
@@ -128,7 +155,7 @@ class SendObjectImage():
                     continue
                 #response = send_img(yolov3_image, status, observed_img_idx, count)
                 #print(response)
-                print("Status:{}\nPicture:{}\nObject:{}\nObject_Word:{}\nObject_Prob:{}\n".format(status, int(ar_folders[k]), l, object_word, object_prob))
+                print("Status:{}\nPicture:{}\nObject:{}\nObject_Word:{}\nObject_Prob(%):{}\n".format(status, int(ar_folders[k]), l, object_word, object_prob))
                 print("************************************************************************")
                 #print(int(ar_folders[k]), l)
 
@@ -165,8 +192,8 @@ class SendObjectImage():
                     print(w)
 
                     for c in judge_object_names:
-                        print("reasoned name is " + w + " ...")
-                        print("target name is " + c + " ...")
+                        #print("reasoned name is " + w + " ...")
+                        #print("target name is " + c + " ...")
                         if w == c:
                             print("Yes!!!!!!!")
                             result = True
@@ -202,4 +229,4 @@ class SendObjectImage():
 if __name__ == "__main__":
     rospy.init_node('send_object_image')
     SendObjectImage()
-    rospy.spin()
+    #rospy.spin()
