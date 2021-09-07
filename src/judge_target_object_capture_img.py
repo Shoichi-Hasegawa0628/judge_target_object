@@ -9,6 +9,7 @@ from subprocess import *
 from geometry_msgs.msg import Twist
 from sensor_msgs.msg import Image
 from cv_bridge import CvBridge, CvBridgeError
+from std_msgs.msg import Empty
 import judge_target_object_send_img
 
 
@@ -24,6 +25,7 @@ class CaptureImageCamera():
     
 
     def taking_image(self):
+        rospy.wait_for_message("/next_judge", Empty, timeout=None)
         rotations = 9
         for rotation in range(rotations):
 

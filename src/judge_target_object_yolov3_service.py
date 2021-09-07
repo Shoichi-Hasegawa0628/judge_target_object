@@ -37,14 +37,16 @@ class JudgeTargetObjectYOLOv3():
         img = 0
         if msg.count != 0:
             while True:
-                img = rospy.wait_for_message('/darknet_ros/detection_image', Image, timeout=None)
+                print("O")
+                img = rospy.wait_for_message('/darknet_ros/detection_image', Image, timeout=15) #原因？
                 img = self.image_ros_to_opencv(img)
                 status = np.array_equal(img, self.detect_pre_img)
                 if status is False:
                     break
         
         else:
-            img = rospy.wait_for_message('/darknet_ros/detection_image', Image, timeout=None)
+            print("OO")
+            img = rospy.wait_for_message('/darknet_ros/detection_image', Image, timeout=15) #原因？
             img = self.image_ros_to_opencv(img)
         self.detect_pre_img = img
         
@@ -56,6 +58,7 @@ class JudgeTargetObjectYOLOv3():
 
         for i in range(len(object_list)):
             while len(self.detect_objects_info) == 0: 
+                print("OOO")
                 continue
             time.sleep(3.0)
             yolov3_img = img
@@ -69,24 +72,24 @@ class JudgeTargetObjectYOLOv3():
                 #cut_img_yolov3 = cv2.cvtColor(cut_img_yolov3, cv2.COLOR_BGR2RGB)
                 cut_img_resize = cv2.resize(cut_img , (int(width_o), int(height_o))) 
 
-                if os.path.exists("../data/trimming/{}".format(img_num)) is True:
+                if os.path.exists("/root/RULO/catkin_ws/src/judge_target_object/data/trimming/{}".format(img_num)) is True:
                     pass
                 else:
-                    os.mkdir("../data/trimming/{}".format(img_num))
+                    os.mkdir("/root/RULO/catkin_ws/src/judge_target_object/data/trimming/{}".format(img_num))
 
-                if os.path.exists("../data/yolov3/{}".format(img_num)) is True:
+                if os.path.exists("/root/RULO/catkin_ws/src/judge_target_object/data/yolov3/{}".format(img_num)) is True:
                     pass
                 else:
-                    os.mkdir("../data/yolov3/{}".format(img_num))
+                    os.mkdir("/root/RULO/catkin_ws/src/judge_target_object/data/yolov3/{}".format(img_num))
 
-                if os.path.exists("../data/resize/{}".format(img_num)) is True:
+                if os.path.exists("/root/RULO/catkin_ws/src/judge_target_object/data/resize/{}".format(img_num)) is True:
                     pass
                 else:
-                    os.mkdir("../data/resize/{}".format(img_num))
+                    os.mkdir("/root/RULO/catkin_ws/src/judge_target_object/data/resize/{}".format(img_num))
 
-                cv2.imwrite("../data/trimming/{}/trimming_img_{}.jpg".format(img_num, i), cut_img)
-                cv2.imwrite("../data/yolov3/{}/yolov3_img_{}.jpg".format(img_num, i), cut_img_yolov3)
-                cv2.imwrite("../data/resize/{}/resize_img_{}.jpg".format(img_num, i), cut_img_resize)
+                cv2.imwrite("/root/RULO/catkin_ws/src/judge_target_object/data/trimming/{}/trimming_img_{}.jpg".format(img_num, i), cut_img)
+                cv2.imwrite("/root/RULO/catkin_ws/src/judge_target_object/data/yolov3/{}/yolov3_img_{}.jpg".format(img_num, i), cut_img_yolov3)
+                cv2.imwrite("/root/RULO/catkin_ws/src/judge_target_object/data/resize/{}/resize_img_{}.jpg".format(img_num, i), cut_img_resize)
 
                 cv2.imshow('color', cut_img)
                 cv2.waitKey(3000)

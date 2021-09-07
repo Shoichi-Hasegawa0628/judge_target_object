@@ -35,30 +35,38 @@ class SendObjectImage():
         result = self.sending_image_judge_mlda()
         
         if result is True:
-            print("Target Object is Found!")
-        else:
+            print("************************")
             print("************************\n")
+            print("Target Object is Found!\n")
+            print("************************")
+            print("************************")
+        
+        else:
+            print("************************")
             print("************************\n")
             print("Not Found in this place\n")
-            print("************************\n")
-            print("************************\n")
+            print("************************")
+            print("************************")
         
+        """
         # 使用した画像の保存とディレクトリの初期化
-        shutil.copytree("../data/", "../result/data") 
-        shutil.rmtree("../data/observation/")
-        shutil.rmtree("../data/resize/")
-        shutil.rmtree("../data/trimming/")
-        shutil.rmtree("../data/yolov3/")
-        os.mkdir("../data/observation")
-        os.mkdir("../data/resize")
-        os.mkdir("../data/trimming")
-        os.mkdir("../data/yolov3")
+        shutil.copytree("/root/RULO/catkin_ws/src/judge_target_object/data/", "/root/RULO/catkin_ws/src/judge_target_object/result/data") 
+        shutil.rmtree("/root/RULO/catkin_ws/src/judge_target_object/data/observation/")
+        shutil.rmtree("/root/RULO/catkin_ws/src/judge_target_object/data/resize/")
+        shutil.rmtree("/root/RULO/catkin_ws/src/judge_target_object/data/trimming/")
+        shutil.rmtree("/root/RULO/catkin_ws/src/judge_target_object/data/yolov3/")
+        os.mkdir("/root/RULO/catkin_ws/src/judge_target_object/data/observation")
+        os.mkdir("/root/RULO/catkin_ws/src/judge_target_object/data/resize")
+        os.mkdir("/root/RULO/catkin_ws/src/judge_target_object/data/trimming")
+        os.mkdir("/root/RULO/catkin_ws/src/judge_target_object/data/yolov3")
+        """
+        
         
 
     def sending_image_judge_yolov3(self):
         time.sleep(5.0)
         count = 0
-        files = glob.glob("../data/observation/*")
+        files = glob.glob("/root/RULO/catkin_ws/src/judge_target_object/data/observation/*")
         rospy.loginfo('waiting') 
         rospy.wait_for_service('judge_yolov3') 
         
@@ -67,7 +75,7 @@ class SendObjectImage():
             #print(len(files))
             #if count != 0:
             #    self.img_pub.register()
-            img = cv2.imread('../data/observation/object_image_{}.jpg'.format(count))
+            img = cv2.imread('/root/RULO/catkin_ws/src/judge_target_object/data/observation/object_image_{}.jpg'.format(count))
             img = self.cv_bridge.cv2_to_imgmsg(img, encoding="bgr8")
 
             if count != 0:
@@ -99,16 +107,16 @@ class SendObjectImage():
     def sending_image_judge_mlda(self):
         folders = []
         files_list = []
-        for i in os.listdir('../data/resize/'):
+        for i in os.listdir('/root/RULO/catkin_ws/src/judge_target_object/data/resize/'):
             #print(os.listdir('../data/resize/' + i))
-            if os.path.isdir('../data/resize/' + i):
+            if os.path.isdir('/root/RULO/catkin_ws/src/judge_target_object/data/resize/' + i):
                 folders.append(i)
         #print(folders)
         ar_folders = natsorted(folders)
         #print(natsorted(folders))
 
         for j in range(len(ar_folders)):
-            files = glob.glob("../data/resize/{}/*".format(int(ar_folders[j])))
+            files = glob.glob("/root/RULO/catkin_ws/src/judge_target_object/data/resize/{}/*".format(int(ar_folders[j])))
             files_list.append(files)
         ar_files_list = natsorted(files_list)
         rospy.loginfo('waiting')
@@ -117,23 +125,24 @@ class SendObjectImage():
         #print(files_list)
         
         for k in range(len(ar_folders)): 
-            #print("ok")
+            #print(k)
             for l in range(len(ar_files_list[k])):
-                #print(len(files_list[k]))
+                #print(l)
                 #print("okok")
                 count = l
                 file_names = []
-                for i in os.listdir('../data/resize/{}'.format(int(ar_folders[k]))):
+                for i in os.listdir('/root/RULO/catkin_ws/src/judge_target_object/data/resize/{}'.format(int(ar_folders[k]))):
                     #print(i)
                     #print(os.listdir('../data/resize/' + i))
                     #if os.path.isdir('../data/resize/' + i):
                     file_names.append(i)
                 #print(file_names)
+                #print("*******************************************************************************************\n")
                 print("Observed Image Number : " + str(int(ar_folders[k])))
                 print("Detected Object :" + file_names[l])
 
                 try:
-                    img = cv2.imread('../data/resize/{}/resize_img_{}.jpg'.format(int(ar_folders[k]), l))
+                    img = cv2.imread('/root/RULO/catkin_ws/src/judge_target_object/data/resize/{}/resize_img_{}.jpg'.format(int(ar_folders[k]), l))
                     cv2.imshow("target_image", img)
                     cv2.waitKey(3000)
                 except cv2.error:
@@ -156,7 +165,7 @@ class SendObjectImage():
                 #response = send_img(yolov3_image, status, observed_img_idx, count)
                 #print(response)
                 print("Status:{}\nPicture:{}\nObject:{}\nObject_Word:{}\nObject_Prob(%):{}\n".format(status, int(ar_folders[k]), l, object_word, object_prob))
-                print("************************************************************************")
+               
                 #print(int(ar_folders[k]), l)
 
                 # 対象物が存在するかの判断
@@ -187,10 +196,9 @@ class SendObjectImage():
                 #command_object = "I"
                 print("Commanded object name is " + command_object + " !")
                 print("Judged object namse are " + judge_object_names[0] + " ," + judge_object_names[1] + " ," + judge_object_names[2])
-
+                print("*********************")
                 for w in object_word:
                     print(w)
-
                     for c in judge_object_names:
                         #print("reasoned name is " + w + " ...")
                         #print("target name is " + c + " ...")
@@ -198,7 +206,8 @@ class SendObjectImage():
                             print("Yes!!!!!!!")
                             result = True
                             return result
-        
+                print("*********************")
+                print("************************************************************************")
         result = False
         return result
 
