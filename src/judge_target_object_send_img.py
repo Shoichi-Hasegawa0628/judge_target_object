@@ -89,6 +89,7 @@ class SendObjectImage():
                     break
            
             if status is False:
+                count += 1
                 continue
             
             #print("Publish image")
@@ -143,16 +144,17 @@ class SendObjectImage():
 
                 try:
                     img = cv2.imread('/root/RULO/catkin_ws/src/judge_target_object/data/resize/{}/resize_img_{}.jpg'.format(int(ar_folders[k]), l))
-                    cv2.imshow("target_image", img)
-                    cv2.waitKey(3000)
+                    #cv2.imshow("target_image", img)
+                    #cv2.waitKey(3000)
                 except cv2.error:
+                    print("Failed: Reading Image (ROS形式)")
                     continue
 
                 #print(type(img))
                 try:
                     img = self.cv_bridge.cv2_to_imgmsg(img, encoding="bgr8")
                 except TypeError:
-                    print("Failed: Reading Image")
+                    print("Failed: Reading Image (OpenCV形式)")
                     continue
 
                 #send_img = rospy.ServiceProxy('judge_mlda', SendImageMLDA)
@@ -203,7 +205,7 @@ class SendObjectImage():
                         #print("reasoned name is " + w + " ...")
                         #print("target name is " + c + " ...")
                         if w == c:
-                            print("Yes!!!!!!!")
+                            #print("Yes!!!!!!!")
                             result = True
                             return result
                 print("*********************")

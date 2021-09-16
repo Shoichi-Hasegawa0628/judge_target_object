@@ -26,11 +26,12 @@ class CaptureImageCamera():
 
     def taking_image(self):
         rospy.wait_for_message("/next_judge", Empty, timeout=None)
-        rotations = 9
+        time.sleep(10)
+        rotations = 13
         for rotation in range(rotations):
 
-            # π/4 (rad/s)で回転
-            self.vel.angular.z = math.pi / 4
+            # π/6 (rad/s)で回転
+            self.vel.angular.z = math.pi / 6
             self.vel_pub.publish(self.vel)
             time.sleep(1.0)
             self.vel.angular.z = 0
@@ -39,7 +40,7 @@ class CaptureImageCamera():
             print("The number of Rotation: ", rotation)
 
             # RGB画像を保存
-            if not rotation == 8:
+            if not rotation == 12:
                 object_image = self.rgb_image_ros_to_opencv()
                 cv2.imwrite('../data/observation/object_image_{}.jpg'.format(rotation), object_image)
 

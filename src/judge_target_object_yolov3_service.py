@@ -27,6 +27,7 @@ class JudgeTargetObjectYOLOv3():
     def judge_target_object_yolov3(self, msg):
         time.sleep(3.0)
         try:
+            #print("k")
             bb = rospy.wait_for_message('/darknet_ros/bounding_boxes', BoundingBoxes, timeout=10)
         except:
             return SendImageYOLOv3Response(success = False)
@@ -37,7 +38,7 @@ class JudgeTargetObjectYOLOv3():
         img = 0
         if msg.count != 0:
             while True:
-                print("O")
+                #print("O")
                 img = rospy.wait_for_message('/darknet_ros/detection_image', Image, timeout=15) #原因？
                 img = self.image_ros_to_opencv(img)
                 status = np.array_equal(img, self.detect_pre_img)
@@ -45,7 +46,7 @@ class JudgeTargetObjectYOLOv3():
                     break
         
         else:
-            print("OO")
+            #print("OO")
             img = rospy.wait_for_message('/darknet_ros/detection_image', Image, timeout=15) #原因？
             img = self.image_ros_to_opencv(img)
         self.detect_pre_img = img
@@ -57,20 +58,26 @@ class JudgeTargetObjectYOLOv3():
         img_num = msg.count
 
         for i in range(len(object_list)):
+            base_time = time.time()
             while len(self.detect_objects_info) == 0: 
-                print("OOO")
+                if time.time() - base_time > 25:
+                    return SendImageYOLOv3Response(success = False)
+                #print("OOO")
                 continue
             time.sleep(3.0)
             yolov3_img = img
             if object_list[i].probability >= 0.5:
 
-                height_o = observed_img.shape[0]
-                width_o = observed_img.shape[1]
+                #height_o = observed_img.shape[0]
+                #width_o = observed_img.shape[1]
 
                 cut_img = observed_img[object_list[i].ymin : object_list[i].ymax, object_list[i].xmin : object_list[i].xmax]
                 cut_img_yolov3 = yolov3_img[object_list[i].ymin : object_list[i].ymax, object_list[i].xmin : object_list[i].xmax]
+                height_cut = cut_img.shape[0]
+                width_cut = cut_img.shape[1]
                 #cut_img_yolov3 = cv2.cvtColor(cut_img_yolov3, cv2.COLOR_BGR2RGB)
-                cut_img_resize = cv2.resize(cut_img , (int(width_o), int(height_o))) 
+                #cut_img_resize = cv2.resize(cut_img , (int(width_o), int(height_o))) # observationの大きさに拡張
+                cut_img_resize = cv2.resize(cut_img , (int(width_cut)*2, int(height_cut)*2))  # 2倍にする
 
                 if os.path.exists("/root/RULO/catkin_ws/src/judge_target_object/data/trimming/{}".format(img_num)) is True:
                     pass

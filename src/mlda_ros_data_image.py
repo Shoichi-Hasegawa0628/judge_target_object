@@ -31,8 +31,10 @@ class GetImageFeature():
         #print(type(discriptor))
         #print(len(discriptor))
         if discriptor is None:
+            print("特徴量抽出に失敗")
             return 0, 0
         elif len(discriptor) < 50:
+            print("指定した特徴数よりも少ないため失敗")
             return 0, np.array(discriptor, dtype=np.float32)
 
         return 1, np.array(discriptor, dtype=np.float32)
