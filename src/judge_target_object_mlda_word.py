@@ -56,8 +56,8 @@ class GetWordFeature():
 
 
     def estimate(self, yolov3_image, status, observed_img_idx, count):
-        word = np.loadtxt("./data/estimate_result/{}/Pmdw[1]_{}.txt".format(observed_img_idx, count))
-        word_file = open("./data/bow/word_dic.txt")
+        word = np.loadtxt("./param/estimate_result/{}/Pmdw[1]_{}.txt".format(observed_img_idx, count))
+        word_file = open("./param/bow/word_dic.txt")
         word_dic = word_file.readlines()
         word_dic = [convert.replace("\n", "") for convert in word_dic]
         word_dic = [convert.replace(".", "") for convert in word_dic]
@@ -81,7 +81,7 @@ class GetWordFeature():
         estimated_words = "I estimated this object. "
         estimate_result = {}
         
-        with open("./data/estimate_result/{}/estimate_word_{}.txt".format(observed_img_idx, count), mode='w') as f:
+        with open("./param/estimate_result/{}/estimate_word_{}.txt".format(observed_img_idx, count), mode='w') as f:
             for word_index in max_k_indices:
                 #print(word_dic[word_index])
                 # estimated_words += word_dic[word_index] + " " + str(round(y[index_counter] * 100, 2)) + "%. "
@@ -96,15 +96,15 @@ class GetWordFeature():
         for word_index in max_k_indices:
             estimate_hist[word_index] += 1
         
-        if os.path.exists("./data/estimate_result/{}".format(observed_img_idx)) is True:
+        if os.path.exists("./param/estimate_result/{}".format(observed_img_idx)) is True:
             pass
 
         else:
-            os.mkdir("./data/estimate_result/{}".format(observed_img_idx))
+            os.mkdir("./param/estimate_result/{}".format(observed_img_idx))
 
-        file = pathlib.Path("./data/estimate_result/{}/estimate_histogram_word_{}.txt".format(observed_img_idx, count))
+        file = pathlib.Path("./param/estimate_result/{}/estimate_histogram_word_{}.txt".format(observed_img_idx, count))
         file.touch()
-        np.savetxt("./data/estimate_result/{}/estimate_histogram_word_{}.txt".format(observed_img_idx, count), estimate_hist.reshape(1, -1), fmt=str("%d"))
+        np.savetxt("./param/estimate_result/{}/estimate_histogram_word_{}.txt".format(observed_img_idx, count), estimate_hist.reshape(1, -1), fmt=str("%d"))
 
         return estimate_result
         

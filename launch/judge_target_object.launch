@@ -4,7 +4,7 @@
 
     <node name="judge_target_object_capture" pkg="judge_target_object" type="judge_target_object_capture_img.py" output="screen" cwd="node" />
     <!-- <node name="judge_target_object_sending" pkg="judge_target_object" type="judge_target_object_send_img.py" output="screen" cwd="node" /> -->
-    <!-- <node name="judge_target_object_yolov3" pkg="judge_target_object" type="judge_target_object_yolov3_service.py" output="screen" cwd="node" /> -->
+    <node name="judge_target_object_yolov3" pkg="judge_target_object" type="judge_target_object_yolov3_service.py" output="screen" cwd="node" />
     <node name="judge_target_object_mlda" pkg="judge_target_object" type="mlda_ros_main.py" output="screen" cwd="node" />
 
 </launch>

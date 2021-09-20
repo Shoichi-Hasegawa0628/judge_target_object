@@ -5,17 +5,17 @@
 import rospy
 #from mlda_ros.srv import SendImageMLDA
 #from mlda_ros.srv import SendImageMLDAResponse
-import mlda_ros_data_image
-import mlda_ros_learn
-import mlda_ros_data_word
+import judge_target_object_mlda_image
+import judge_target_object_mlda_learn
+import judge_target_object_mlda_word
 
 
 class MLDAMain():
     
     def __init__(self):
-        self.mlda_image = mlda_ros_data_image.GetImageFeature()
-        self.mlda_learn = mlda_ros_learn.MLDA()
-        self.mlda_word = mlda_ros_data_word.GetWordFeature()
+        self.mlda_image = judge_target_object_mlda_image.GetImageFeature()
+        self.mlda_learn = judge_target_object_mlda_learn.MLDA()
+        self.mlda_word = judge_target_object_mlda_word.GetWordFeature()
         #rospy.Service('judge_mlda', SendImageMLDA, self.judge_target_object_mlda)
     
 

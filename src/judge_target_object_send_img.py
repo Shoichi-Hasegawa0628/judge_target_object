@@ -18,13 +18,13 @@ from std_msgs.msg import String
 from darknet_ros_msgs.msg import BoundingBoxes,BoundingBox
 from subprocess import * 
 from natsort import natsorted
-import mlda_ros_main
+import judge_target_object_mlda_main
 import shutil
 
 
 class SendObjectImage():
     def __init__(self):
-        self.mlda_main = mlda_ros_main.MLDAMain()
+        self.mlda_main = judge_target_object_mlda_main.MLDAMain()
         # YOLOv3
         self.img_pub = rospy.Publisher('/object_image', Image, queue_size=1)
         rospy.Subscriber('/darknet_ros/bounding_boxes', BoundingBoxes, self.bounding_callback, queue_size=1)

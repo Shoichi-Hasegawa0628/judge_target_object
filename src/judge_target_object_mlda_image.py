@@ -57,19 +57,19 @@ class GetImageFeature():
         code_book = bow_trainer.cluster()
         #print("Start")
 
-        if os.path.exists("./data/bof/{}".format(count)) is True:
+        if os.path.exists("./param/bof/{}".format(count)) is True:
             pass
 
         else:
-            os.mkdir("./data/bof/{}".format(count))
+            os.mkdir("./param/bof/{}".format(count))
 
-        file = pathlib.Path("./data/bof/" + save_name)
+        file = pathlib.Path("./param/bof/" + save_name)
         file.touch()
-        np.savetxt("./data/bof/" + save_name, code_book)                                      
+        np.savetxt("./param/bof/" + save_name, code_book)                                      
     
 
     def make_bof(self, code_book_name, images, hist_name, estimate_mode, count):
-        code_book = np.loadtxt("./data/bof" + "/" + code_book_name, dtype=np.float32)                
+        code_book = np.loadtxt("./param/bof" + "/" + code_book_name, dtype=np.float32)                
         self.knn.train(code_book, cv2.ml.ROW_SAMPLE, np.arange(len(code_book), dtype=np.float32))
 
         hists = []
@@ -88,11 +88,11 @@ class GetImageFeature():
             hists.append( h )
             #print(hists)
 
-            if os.path.exists("./data/bof/{}".format(count)) is True:
+            if os.path.exists("./param/bof/{}".format(count)) is True:
                 pass
 
             else:
-                os.mkdir("./data/bof/{}".format(count))
+                os.mkdir("./param/bof/{}".format(count))
 
             file = pathlib.Path(hist_name)
             file.touch()
@@ -126,7 +126,7 @@ class GetImageFeature():
             result = self.make_codebook(img, 50, "{}/codebook_{}.txt".format(observed_img_idx, count), observed_img_idx)
             if result == 0:
                 return 0                                        
-            self.make_bof("{}/codebook_{}.txt".format(observed_img_idx, count), img, "./data/bof/{}/histgram_v_{}.txt".format(observed_img_idx, count), True, observed_img_idx)                         
+            self.make_bof("{}/codebook_{}.txt".format(observed_img_idx, count), img, "./param/bof/{}/histgram_v_{}.txt".format(observed_img_idx, count), True, observed_img_idx)                         
 
 
     def image_callback(self, image):

@@ -15,7 +15,7 @@ import codecs
 class MLDA():
 
     def load_model( self, estimate_mode):
-        with open("./data/learn_result/model.pickle", "rb") as f:
+        with open("./param/learn_result/model.pickle", "rb") as f:
             a,b = pickle.load( f )
         return a,b
 
@@ -270,12 +270,12 @@ class MLDA():
             pass
 
         elif status == "estimate":  ######パスの編集が必要
-            self.data = [np.loadtxt("./data/bof/{}/histgram_v_{}.txt".format(observed_img_idx, count), 
+            self.data = [np.loadtxt("./param/bof/{}/histgram_v_{}.txt".format(observed_img_idx, count), 
                          dtype=np.int32),
                          None]
 
             #rospy.loginfo("Estimate unknown object mode start")
-            self.mlda_learn(count, "./data/estimate_result/{}".format(observed_img_idx), True)        ######パスの編集が必要
+            self.mlda_learn(count, "./param/estimate_result/{}".format(observed_img_idx), True)        ######パスの編集が必要
 
         else:
             #rospy.logwarn(
