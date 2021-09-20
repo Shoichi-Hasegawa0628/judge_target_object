@@ -12,12 +12,16 @@ This ROS package is to judge target object from human command by using MLDA and 
 *   [References](#references)
 
 ## Requirement
-yolov3
-pip install pathlib
-pip install natsort
+~~~
+yolov3  
+pip install pathlib  
+pip install natsort  
+~~~
 
 ## Launch
+~~~
 roslaunch judge_target_object judge_target_object.launch
+~~~
 
 ## Codes
 - `README.md`: Read me file (This file)
