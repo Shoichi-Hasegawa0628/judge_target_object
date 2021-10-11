@@ -11,8 +11,10 @@ import codecs
 from std_msgs.msg import String
 import pathlib
 import os
+import rospy
 
 class GetWordFeature():
+    """
     def separate_word(self, filename):
         for line in codecs.open(DATA_FOLDER + "/" + filename, "r", "utf-8").readlines():
             line = line.rstrip("\r\n")
@@ -54,7 +56,7 @@ class GetWordFeature():
             
         rospy.loginfo("add the new word %s to object %d", add_word, object_id)
 
-
+    """
     def estimate(self, yolov3_image, status, observed_img_idx, count):
         word = np.loadtxt("./param/estimate_result/{}/Pmdw[1]_{}.txt".format(observed_img_idx, count))
         word_file = open("./param/bow/word_dic.txt")
