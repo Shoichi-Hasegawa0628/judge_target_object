@@ -16,12 +16,8 @@ import math
 import sys
 reload(sys)
 sys.setdefaultencoding('utf-8')
+import roslib.packages
 
-#TRIALNAME = "Testno"
-# TRIALNAME = "Testor"
-#TRIALNAME = "Testmr"
-#NEWDATA = False # When you make the dataset, you should write True
-#ESTIMATE = True # When you do the experiment, you should write True
 
 ITERATION = 100
 CATEGORYNUM = 3
@@ -30,10 +26,8 @@ CATEGORYNUM = 3
 ALPHA = 1.0
 BETA = 1.0
 
-#IMAGE_TOPIC = "/sciurus17/camera/color/image_raw"
-#WORD_TOPIC="/sciurus17/em_mlda/word"
-#JOINT_LOAD_TOPIC="/sciurus17/controller2/joint_states"
-#JOINT_LOAD_SAVE_TOPIC="/sciurus17/em_mlda/joint_states_save"
-
-#DATASET_FOLDER = "../training_data/"
-#DATA_FOLDER = DATASET_FOLDER + TRIALNAME
+JUDGE_TARGET_OBJCT_PATH = str(roslib.packages.get_pkg_dir("judge_target_object"))
+OBSERVATION_FOLDER = JUDGE_TARGET_OBJCT_PATH  + "/data/observation/"
+RESIZE_FOLDER = JUDGE_TARGET_OBJCT_PATH  + "/data/resize/"
+TRIMMING_FOLDER = JUDGE_TARGET_OBJCT_PATH  + "/data/trimming/"
+YOLO_IMG_FOLDER = JUDGE_TARGET_OBJCT_PATH + "/data/yolov3/"

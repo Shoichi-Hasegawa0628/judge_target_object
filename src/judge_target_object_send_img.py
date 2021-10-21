@@ -1,28 +1,36 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
-# judge_yolov3.pyとjudge_mlda.pyに撮影した画像を1枚ずつ送るコード
+# judge_target_object_cut_image.pyとjudge_target_object_mlda.pyに画像を1枚ずつ送るプログラム
 
 # 必要なライブラリ
 # pip install natsort
 
-import rospy
+# Standard Library
 import cv2
-from cv_bridge import CvBridge
 import time
 import glob
 import os
-from judge_target_object.srv import SendImageYOLOv3
-#from judge_target_object.srv import SendImageMLDA
+import shutil
+from cv_bridge import CvBridge
+
+# Third Party
+import rospy
+import roslib.packages
 from sensor_msgs.msg import Image
 from std_msgs.msg import String
 from darknet_ros_msgs.msg import BoundingBoxes,BoundingBox
-from subprocess import * 
+from subprocess import *
 from natsort import natsorted
+
+# Self-made Modules
 import judge_target_object_mlda_main
-import shutil
+from __init__ import *
+from judge_target_object.srv import SendImageYOLOv3
+#from judge_target_object.srv import SendImageMLDA
 
 
 class SendObjectImage():
+
     def __init__(self):
         self.mlda_main = judge_target_object_mlda_main.MLDAMain()
         # YOLOv3
@@ -61,12 +69,12 @@ class SendObjectImage():
         os.mkdir("/root/RULO/catkin_ws/src/judge_target_object/data/yolov3")
         """
         
-        
 
     def sending_image_judge_yolov3(self):
         time.sleep(5.0)
         count = 0
-        files = glob.glob("/root/RULO/catkin_ws/src/judge_target_object/data/observation/*")
+        files = glob.glob(OBSERVATION_FOLDER + "*")
+        #files = glob.glob("/root/RULO/catkin_ws/src/judge_target_object/data/observation/*")
         rospy.loginfo('waiting') 
         rospy.wait_for_service('judge_yolov3') 
         
@@ -75,7 +83,7 @@ class SendObjectImage():
             #print(len(files))
             #if count != 0:
             #    self.img_pub.register()
-            img = cv2.imread('/root/RULO/catkin_ws/src/judge_target_object/data/observation/object_image_{}.jpg'.format(count))
+            img = cv2.imread(OBSERVATION_FOLDER + "object_image_{}.jpg".format(count))
             img = self.cv_bridge.cv2_to_imgmsg(img, encoding="bgr8")
 
             if count != 0:
@@ -102,22 +110,21 @@ class SendObjectImage():
             count += 1
             #self.kill_node('send_object_image')
             #rospy.init_node('send_object_image')
-              
 
     
     def sending_image_judge_mlda(self):
         folders = []
         files_list = []
-        for i in os.listdir('/root/RULO/catkin_ws/src/judge_target_object/data/resize/'):
+        for i in os.listdir(RESIZE_FOLDER):
             #print(os.listdir('../data/resize/' + i))
-            if os.path.isdir('/root/RULO/catkin_ws/src/judge_target_object/data/resize/' + i):
+            if os.path.isdir(RESIZE_FOLDER + i):
                 folders.append(i)
         #print(folders)
         ar_folders = natsorted(folders)
         #print(natsorted(folders))
 
         for j in range(len(ar_folders)):
-            files = glob.glob("/root/RULO/catkin_ws/src/judge_target_object/data/resize/{}/*".format(int(ar_folders[j])))
+            files = glob.glob(RESIZE_FOLDER + "{}/*".format(int(ar_folders[j])))
             files_list.append(files)
         ar_files_list = natsorted(files_list)
         rospy.loginfo('waiting')
@@ -132,7 +139,7 @@ class SendObjectImage():
                 #print("okok")
                 count = l
                 file_names = []
-                for i in os.listdir('/root/RULO/catkin_ws/src/judge_target_object/data/resize/{}'.format(int(ar_folders[k]))):
+                for i in os.listdir(RESIZE_FOLDER + "{}".format(int(ar_folders[k]))):
                     #print(i)
                     #print(os.listdir('../data/resize/' + i))
                     #if os.path.isdir('../data/resize/' + i):
@@ -143,7 +150,7 @@ class SendObjectImage():
                 print("Detected Object :" + file_names[l])
 
                 try:
-                    img = cv2.imread('/root/RULO/catkin_ws/src/judge_target_object/data/resize/{}/resize_img_{}.jpg'.format(int(ar_folders[k]), l))
+                    img = cv2.imread(RESIZE_FOLDER + "{}/resize_img_{}.jpg".format(int(ar_folders[k]), l))
                     #cv2.imshow("target_image", img)
                     #cv2.waitKey(3000)
                 except cv2.error:

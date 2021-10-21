@@ -1,23 +1,30 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
-# ロボットがその場で回転しながらRGB画像を8枚保存するコード
-import rospy
+# ロボットがその場で回転しながら複数枚のRGB画像を保存するプログラム
+
+# Standard Library
 import math
 import time
 import cv2
-from subprocess import * 
+from subprocess import *
+from cv_bridge import CvBridge, CvBridgeError
+
+# Third Party
+import rospy
 from geometry_msgs.msg import Twist
 from sensor_msgs.msg import Image
-from cv_bridge import CvBridge, CvBridgeError
 from std_msgs.msg import Empty
+
+# Self-made Modules
 import judge_target_object_send_img
+from __init__ import *
 
 
 class CaptureImageCamera():
     
     def __init__(self):
-        self.vel_pub = rospy.Publisher('/cmd_vel', Twist, queue_size=10)
-        rospy.Subscriber('/camera/rgb/image_raw', Image, self.image_callback, queue_size=10)
+        self.vel_pub = rospy.Publisher('/hsrb/command_velocity', Twist, queue_size=10)
+        rospy.Subscriber('/hsrb/head_rgbd_sensor/rgb/image_raw', Image, self.image_callback, queue_size=10)
         self.vel = Twist()
         self.cv_bridge = CvBridge()
         self.image = 0
@@ -42,11 +49,12 @@ class CaptureImageCamera():
             # RGB画像を保存
             if not rotation == 12:
                 object_image = self.rgb_image_ros_to_opencv()
-                cv2.imwrite('../data/observation/object_image_{}.jpg'.format(rotation), object_image)
+                cv2.imwrite(OBSERVATION_FOLDER + 'object_image_{}.jpg'.format(rotation), object_image)
 
         time.sleep(1.0)
         #self.kill_node('take_observed_image')
         judge_target_object_send_img.SendObjectImage()
+
 
     def image_callback(self, img):
         self.image = img

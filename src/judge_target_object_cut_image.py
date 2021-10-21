@@ -1,17 +1,25 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
-# YOLOv3で検出した物体から, 識別精度0.5以上の物体のみtarget_objectとして物体の画像領域だけを切り抜くコード
+# YOLOで検出した物体から, 識別精度0.5以上の物体のみtarget_objectとして物体の画像領域だけを切り抜くプログラム
+
+# Standard Library
+import time
+import cv2
+import os
+from cv_bridge import CvBridge, CvBridgeError
+from subprocess import *
+
+# Third Party
 import rospy
 import numpy as np
-import cv2
-from cv_bridge import CvBridge, CvBridgeError
 from darknet_ros_msgs.msg import BoundingBoxes,BoundingBox
 from sensor_msgs.msg import Image
+
+# Self-made Modules
 from judge_target_object.srv import SendImageYOLOv3
 from judge_target_object.srv import SendImageYOLOv3Response
-import os
-from subprocess import * 
-import time
+from __init__ import *
+
 
 class JudgeTargetObjectYOLOv3():
     
@@ -79,25 +87,24 @@ class JudgeTargetObjectYOLOv3():
                 #cut_img_resize = cv2.resize(cut_img , (int(width_o), int(height_o))) # observationの大きさに拡張
                 cut_img_resize = cv2.resize(cut_img , (int(width_cut)*2, int(height_cut)*2))  # 2倍にする
 
-                if os.path.exists("/root/RULO/catkin_ws/src/judge_target_object/data/trimming/{}".format(img_num)) is True:
+                if os.path.exists(TRIMMING_FOLDER + "{}".format(img_num)) is True:
                     pass
                 else:
-                    os.mkdir("/root/RULO/catkin_ws/src/judge_target_object/data/trimming/{}".format(img_num))
+                    os.mkdir(TRIMMING_FOLDER + "{}".format(img_num))
 
-                if os.path.exists("/root/RULO/catkin_ws/src/judge_target_object/data/yolov3/{}".format(img_num)) is True:
+                if os.path.exists(YOLO_IMG_FOLDER + "{}".format(img_num)) is True:
                     pass
                 else:
-                    os.mkdir("/root/RULO/catkin_ws/src/judge_target_object/data/yolov3/{}".format(img_num))
+                    os.mkdir(YOLO_IMG_FOLDER + "{}".format(img_num))
 
-                if os.path.exists("/root/RULO/catkin_ws/src/judge_target_object/data/resize/{}".format(img_num)) is True:
+                if os.path.exists(RESIZE_FOLDER + "{}".format(img_num)) is True:
                     pass
                 else:
-                    os.mkdir("/root/RULO/catkin_ws/src/judge_target_object/data/resize/{}".format(img_num))
+                    os.mkdir(RESIZE_FOLDER + "{}".format(img_num))
 
-                cv2.imwrite("/root/RULO/catkin_ws/src/judge_target_object/data/trimming/{}/trimming_img_{}.jpg".format(img_num, i), cut_img)
-                cv2.imwrite("/root/RULO/catkin_ws/src/judge_target_object/data/yolov3/{}/yolov3_img_{}.jpg".format(img_num, i), cut_img_yolov3)
-                cv2.imwrite("/root/RULO/catkin_ws/src/judge_target_object/data/resize/{}/resize_img_{}.jpg".format(img_num, i), cut_img_resize)
-
+                cv2.imwrite(TRIMMING_FOLDER + "{}/trimming_img_{}.jpg".format(img_num, i), cut_img)
+                cv2.imwrite(YOLO_IMG_FOLDER + "{}/yolov3_img_{}.jpg".format(img_num, i), cut_img_yolov3)
+                cv2.imwrite(RESIZE_FOLDER + "{}/resize_img_{}.jpg".format(img_num, i), cut_img_resize)
                 cv2.imshow('color', cut_img)
                 cv2.waitKey(3000)
 
